@@ -18,7 +18,6 @@ function CartBtn({ func, temp, i, inCart }) {
   const [cartStatus, setCartStatus] = useState(false);
   const [btnValue, setbtnValue] = useState("");
   useEffect(() => {
-    console.log(ids.includes(i));
     if (ids.includes(i)) {
       setCartStatus(true);
     }

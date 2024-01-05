@@ -1,3 +1,7 @@
+
+
+/* ------------------------------------------------------ */
+
 .icon {
     color: aliceblue;
 }  
@@ -7,13 +11,14 @@
 }
 
 .nav{
-    position: sticky;
-    /* width: 100%; */
+    /* position: sticky; */
+    width: 100%;
     height: 5rem;
     margin: 0;
     padding: 1rem;
-    top: 0;
-    clear: both;
+    /* top: 0; */
+    overflow: hidden;
+
 }   
 
 .nav ul{
@@ -30,7 +35,7 @@
 
 .right{
     display: flex;
-    width: 20%;
+    width: 200px;
     align-items: center;
     justify-content: space-evenly;
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
@@ -38,4 +43,46 @@
 
 .hide{
     display: none;
+}
+
+@media screen and (max-width: 960px) {
+    .nav a {
+        display: none;
+    }
+
+    .menu-icon {
+        display: block;
+        position: absolute;
+        top: 0;
+        right: 0;
+        cursor: pointer;
+    }
+
+    .nav-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background-color: #333;
+        min-width: 160px;
+    }
+
+    .nav-menu.active {
+        display: block;
+    }
+
+    .nav-menu li {
+        border-bottom: 1px solid #ddd;
+    }
+
+    .nav-menu a {
+        display: block;
+        color: #f2f2f2;
+        padding: 14px 16px;
+        text-decoration: none;
+    }
+
+    .nav-menu a:hover {
+        background-color: #ddd;
+    }
 }

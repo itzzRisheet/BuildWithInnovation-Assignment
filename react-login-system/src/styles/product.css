@@ -7,7 +7,7 @@
     border-radius: 5px;
     padding: 10px;
     box-shadow: 0 1px 23px rgb(255, 255, 255), 0 1px 2px rgba(0, 0, 0, 0.24);
-    margin:2rem 2rem;
+    margin:0.5rem 0.5rem;
 }
 
 .amazon-product-images {
@@ -42,7 +42,9 @@
 
 .amazon-product-title {
     margin: 0;
-    margin-bottom: 10px;
+    height: 55px;
+    text-align: center;
+    /* margin-bottom: 10px; */
     font-size: 18px;
     font-weight: bold;
 }
@@ -61,7 +63,7 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    margin-bottom: 10px;
+    /* margin-bottom: 10px; */
 }
 
 .amazon-product-price {
@@ -88,20 +90,6 @@
     /* border: 2px solid  black; */
 }
 
-.amazon-product-rating-star {
-    width: 18px;
-    height: 18px;
-    background: url('https://emojiisland.com/cdn/shop/products/Star_Emoji_large.png?v=1571606063') no-repeat;
-    /* background-color: yellow; */
-    border: 1px solid black;
-    cursor: pointer;
-    outline: #e5e5e5;
-}
-
-.amazon-product-rating-star-filled {
-    background: url('https://cdn.sstatic.net/Img/stars/star-full-small.png') 0 -18px no-repeat;
-    background-color: yellow;
-}
 
 .amazon-product-stock {
     font-size: 14px;
@@ -112,7 +100,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    /* margin-bottom: 10px; */
+        height: 40px;
 }
 
 .amazon-product-info-item {
@@ -122,7 +111,9 @@
 
 .addToCartBtn{
     display: flex;
-    width: 100%;
-    /* padding: 0.5rem; */
+    /* width: 100%; */
+    padding: 0.5rem;
+    align-items: center;
     justify-content: center;
+    height: 45px;
 }

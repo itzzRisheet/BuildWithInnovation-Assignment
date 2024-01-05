@@ -103,7 +103,7 @@ const Product = ({
           func={() => {
             if (!inCart) {
               if (ids.includes(id)) {
-                toast.error("already added to cart");
+                toast.error("want to add more go to Cart");
               } else {
                 addID(id);
                 setCartDataLocal(product);

@@ -23,7 +23,7 @@ function Cart() {
 
   return (
     <motion.div
-      className="homeContainer"
+      className="products"
       initial={{ width: "0%" }}
       animate={{ width: "100%" }}
       exit={{ width: "0% " }}
