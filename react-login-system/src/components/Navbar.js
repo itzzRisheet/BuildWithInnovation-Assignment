@@ -9,7 +9,7 @@ import { faCartShopping, faHouse } from "@fortawesome/free-solid-svg-icons";
 function Navbar() {
   const { token } = useLocalStorage((state) => state.tokenData);
   const setToken = useLocalStorage((state) => state.setToken);
-  const cartDataLocal = useCart((state) => state.cartDataLocal);
+  const { total } = useCart();
 
   useEffect(() => {}, [token]);
   const [hovered, setHovered] = useState(false);
@@ -54,7 +54,7 @@ function Navbar() {
           <li>
             <Link to={"/cart"} className="icon">
               <FontAwesomeIcon icon={faCartShopping} />
-              <span>{cartDataLocal.length}</span>
+              <span>{total}</span>
             </Link>
           </li>
         </div>

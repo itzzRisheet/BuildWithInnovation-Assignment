@@ -5,8 +5,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCartShopping, faCheck } from "@fortawesome/free-solid-svg-icons";
 
 function CartBtn({ func, temp, i, inCart }) {
-
-
   const ids = useCart((state) => state.id);
   const [cartStatus, setCartStatus] = useState(false);
   const [btnValue, setbtnValue] = useState("");
@@ -15,7 +13,7 @@ function CartBtn({ func, temp, i, inCart }) {
       setCartStatus(true);
     }
     if (inCart) {
-      setbtnValue("remove from Cart");
+      setbtnValue("remove ");
     } else {
       if (cartStatus) {
         setbtnValue("added to cart");
@@ -32,7 +30,7 @@ function CartBtn({ func, temp, i, inCart }) {
           {cartStatus ? (
             <FontAwesomeIcon icon={faCheck} />
           ) : (
-            <FontAwesomeIcon icon={faCartShopping} className="cart"/>
+            <FontAwesomeIcon icon={faCartShopping} className="cart" />
           )}
         </span>
         <p className="text">{btnValue}</p>

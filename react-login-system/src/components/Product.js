@@ -6,7 +6,9 @@ import CartBtn from "./cartBtn";
 import { faStar as solidStar } from "@fortawesome/free-solid-svg-icons";
 import { faStar as hollowStar } from "@fortawesome/free-regular-svg-icons";
 import { useCart } from "../store/zusStore";
+import AddItem from "./addItem.js";
 import toast from "react-hot-toast";
+import { Minus, MinusCircle, Plus, PlusCircle } from "lucide-react";
 
 const Product = ({
   id,
@@ -21,15 +23,17 @@ const Product = ({
   category,
   images,
   inCart,
+  total,
 }) => {
   const [currImage, setcurrImage] = useState(thumbnail);
   // const setCartData = useCart((state) => state.setCartData);
-  const cartDataLocal = useCart((state) => state.cartDataLocal);
-  const ids = useCart((state) => state.id);
-  const addID = useCart((state) => state.addID);
-  const setCartDataLocal = useCart((state) => state.setCartDataLocal);
-  const removeItem = useCart((state) => state.removeItem);
 
+  const { cartDataLocal, setCartDataLocal, removeItem, addID } = useCart();
+
+  const ids = useCart((state) => state.id);
+  const [addStatus, setAddStatus] = useState(false);
+  const incrementItem = useCart((state) => state.incrementItem);
+  const decrementItem = useCart((state) => state.decrementItem);
   const product = {
     id,
     title,
@@ -42,6 +46,19 @@ const Product = ({
     brand,
     category,
     images,
+    inCart,
+    total: 1,
+  };
+
+  const printTotalItem = () => {
+    const obj = cartDataLocal.find((product) => product.id === id);
+    // return <p>wait</p>;
+    return <p className="add">{obj.total}</p>;
+  };
+
+  const isRemovable = () => {
+    const obj = cartDataLocal.find((product) => product.id === id);
+    return obj.total > 1;
   };
 
   return (
@@ -99,29 +116,68 @@ const Product = ({
         <span className="amazon-product-info-item">In {category}</span>
       </div>
       <div className="addToCartBtn">
-        <CartBtn
-          func={() => {
-            if (!inCart) {
-              if (ids.includes(id)) {
-                toast.error("want to add more go to Cart");
+        {inCart ? (
+          <span>
+            <MinusCircle
+              onClick={() => {
+                const obj = cartDataLocal.find((product) => product.id === id);
+                if (obj.total > 1) {
+                  setAddStatus(true);
+                  decrementItem(id);
+                } else {
+                  removeItem(id);
+                }
+              }}
+              className="itmbtn"
+            />
+          </span>
+        ) : (
+          ""
+        )}
+
+        {addStatus ? (
+          printTotalItem()
+        ) : (
+          <CartBtn
+            func={() => {
+              if (!inCart) {
+                if (ids.includes(id)) {
+                  toast.error("want to add more go to Cart");
+                } else {
+                  addID(id);
+                  setCartDataLocal(product);
+                }
               } else {
-                addID(id);
-                setCartDataLocal(product);
+                removeItem(id);
               }
-            } else {
-              removeItem(id);
-              console.log(cartDataLocal);
-            }
-          }}
-          i={id}
-          inCart={inCart}
-        />
+            }}
+            i={id}
+            inCart={inCart}
+          />
+        )}
+
+        {inCart ? (
+          <span>
+            <PlusCircle
+              onClick={() => {
+                const obj = cartDataLocal.find((product) => product.id === id);
+                console.log(obj.total, addStatus, isRemovable());
+                setAddStatus(true);
+                incrementItem(id);
+              }}
+              className="itmbtn"
+            />
+          </span>
+        ) : (
+          ""
+        )}
       </div>
     </div>
   );
 };
 
 Product.propTypes = {
+  id: PropTypes.number,
   title: PropTypes.string,
   description: PropTypes.string,
   thumbnail: PropTypes.string,
@@ -132,6 +188,8 @@ Product.propTypes = {
   brand: PropTypes.string,
   category: PropTypes.string,
   images: PropTypes.arrayOf(PropTypes.string),
+  inCart: PropTypes.bool,
+  total: PropTypes.number,
 };
 
 export default Product;

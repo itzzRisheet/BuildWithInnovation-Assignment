@@ -41,11 +41,6 @@ function Home() {
     filterDataWithPrice(range);
   };
 
-  //   setFilterProcuts(fp);
-  //   setFilterApplied(true);
-  //   toast.success(productData.length);
-  // };
-
   const printProducts = (pds) => {
     return (
       <div className="products">

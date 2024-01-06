@@ -5,21 +5,7 @@ import Product from "./Product";
 import { motion } from "framer-motion";
 
 function Cart() {
-  // const cartData = useCart((state) => state.cartData);
-  const cartDataLocal = useCart((state) => state.cartDataLocal);
-  // const [productData, setProductData] = useState([]);
-
-  const axiosConfig = axios.create({
-    baseURL: process.env.BASEURL,
-  });
-
-  // useEffect(() => {
-  //   cartData.map(async (url) => {
-  //     await axiosConfig.get(url).then((res) => {
-  //       setProductData((prev) => [...prev, res.data]);
-  //     });
-  //   });
-  // }, []);
+  const { cartDataLocal, total } = useCart();
 
   return (
     <motion.div
@@ -43,6 +29,7 @@ function Cart() {
             thumbnail={productDetails.thumbnail}
             images={productDetails.images}
             inCart={true}
+            total={0}
           />
         );
       })}
