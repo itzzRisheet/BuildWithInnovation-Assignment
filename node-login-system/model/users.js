@@ -13,9 +13,11 @@ const userSchema = new Schema({
   },
   name: {
     type: String,
+    default: "",
   },
   profile: {
     type: String,
+    default: "",
   },
   isAdmin: {
     type: Boolean,

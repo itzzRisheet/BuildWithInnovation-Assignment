@@ -6,7 +6,7 @@ export default async function connect() {
   //   const mongod = await MongoMemoryServer.create();
   //   const getURI = mongod.getUri();
 
-  mongoose.set("strictQuery", true);
+  // mongoose.set("strictQuery", true);
   await mongoose
     .connect("mongodb://localhost:27017")
     .then((db) => {

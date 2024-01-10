@@ -9,12 +9,12 @@ router.route("/register").post(controller.validate, controller.register);
 router.route("/login").post(controller.login);
 router.route("/authenticate").post();
 router.route("/user").post(auth, controller.getUser);
+router.route("/deleteUser").delete(auth, controller.deleteUser);
 
 //Get requests
 router.route("/createResetSession").get();
 
 //Put requests
 router.route("/updateUser/").put(auth, controller.updateUser);
-router.route("/resetPassword").put();
 
 export default router;

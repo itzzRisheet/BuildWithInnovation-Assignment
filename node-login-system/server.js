@@ -2,7 +2,6 @@ import express from "express";
 import cors from "cors";
 import router from "./routes/route.js";
 import connect from "./dbConnect.js";
-import morgan from "morgan";
 
 const app = express();
 const corsConfig = {
@@ -18,8 +17,6 @@ const corsConfig = {
 app.use(express.json());
 app.use(cors());
 
-app.use(morgan("tiny"));
-app.disable("x-powered-by");
 app.use("/api", router);
 
 const PORT = 8080 || process.env.PORT;

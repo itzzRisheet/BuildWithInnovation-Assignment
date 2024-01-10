@@ -3,12 +3,14 @@ import userModel from "../model/users.js";
 import { response } from "express";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+
 dotenv.config();
 
 export async function validate(req, res, next) {
   const { email, password, contact } = req.body;
 
   const pattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+
   if (!email && !contact) {
     res.status(500).send({
       msg: "email or password required",
@@ -23,13 +25,27 @@ export async function validate(req, res, next) {
 
   if (email) {
     emailValidatePromise = new Promise(async (resolve, reject) => {
-      if (email === "admin") {
-        resolve();
-      }
       if (pattern.test(email)) {
         resolve();
       } else {
         reject("Invalid email!!!");
+      }
+    });
+  }
+
+  if (contact) {
+    ContactValidate = new Promise((resolve, reject) => {
+      var digitRegex = /^\d+$/;
+
+      var isNumeric = digitRegex.test(contact);
+
+      var isValidLength = contact.toString().length === 10;
+      console.log(contact.length);
+
+      if (isNumeric && isValidLength) {
+        resolve();
+      } else {
+        reject("Invalid contact number!!!");
       }
     });
   }
@@ -57,23 +73,6 @@ export async function validate(req, res, next) {
     resolve();
   });
 
-  if (contact) {
-    ContactValidate = new Promise((resolve, reject) => {
-      var digitRegex = /^\d+$/;
-
-      var isNumeric = digitRegex.test(contact);
-
-      var isValidLength = contact.toString().length === 10;
-      console.log(contact.length);
-
-      if (isNumeric && isValidLength) {
-        resolve();
-      } else {
-        reject("Invalid contact number!!!");
-      }
-    });
-  }
-
   Promise.all([emailValidatePromise, passwordValidatePromise, ContactValidate])
     .then(() => {
       next();
@@ -95,6 +94,7 @@ export async function register(req, res) {
         error: null,
       });
     }
+    const isAdmin = email.endsWith("@" + process.env.ADMIN_SECRET);
 
     const userPromise = new Promise(async (resolve, reject) => {
       try {
@@ -122,11 +122,20 @@ export async function register(req, res) {
                 email,
                 contact,
                 name,
+                isAdmin,
               });
 
               User.save()
-                .then((result) => {
-                  res.status(201).send("User registered successfully...");
+                .then(() => {
+                  if (isAdmin) {
+                    return res
+                      .status(201)
+                      .send("admin registered successfully");
+                  } else {
+                    return res
+                      .status(201)
+                      .send("User registered successfully...");
+                  }
                 })
                 .catch((err) => {
                   console.log(err);
@@ -159,43 +168,9 @@ export async function register(req, res) {
   }
 }
 
-export async function adminLogin(req, res, email, password) {
-  if (!email) {
-    return res.status(500).send({
-      msg: "Please enter email!!!",
-    });
-  }
-
-  const passwordCheck = password === process.env.ADMIN_PASSWORD;
-
-  if (!passwordCheck) {
-    return res.status(400).send({
-      msg: "Wrong Password",
-      error: "",
-    });
-  }
-
-  const token = jwt.sign(
-    {
-      isAdmin: true,
-    },
-    process.env.JWT_SECRET,
-    { expiresIn: "24h" }
-  );
-
-  return res.status(200).send({
-    msg: "login successfully",
-    token,
-  });
-}
-
 export async function login(req, res) {
   try {
     const { email, contact, password } = req.body;
-
-    if (email === process.env.ADMIN_USERNAME) {
-      return adminLogin(req, res, email, password);
-    }
 
     if (!email && !contact) {
       res.status(500).send({
@@ -248,6 +223,7 @@ export async function login(req, res) {
                 profile: user.profile,
                 contact: user.contact || "",
                 name: user.name,
+                isAdmin: user.isAdmin,
               },
               process.env.JWT_SECRET,
               { expiresIn: "24h" }
@@ -255,7 +231,6 @@ export async function login(req, res) {
 
             return res.status(200).send({
               msg: "login successfully",
-              userMail: user.email,
               token,
             });
           })
@@ -284,12 +259,28 @@ export async function login(req, res) {
 
 export async function getUser(req, res) {
   try {
-    const details = req.user;
-    if (details) {
-      return res.status(200).send({
-        msg: "successful",
-        user: details,
+    const { isAdmin } = req.user;
+    if (isAdmin) {
+      var { id, email, contact } = req.body;
+
+      const query = {
+        $or: [{ _id: id }, { email: email }, { contact: contact }],
+      };
+
+      userModel.findOne(query).then((user) => {
+        return res.status(200).send({
+          msg: "Successful",
+          user,
+        });
       });
+    } else {
+      var details = req.user;
+      if (details) {
+        return res.status(200).send({
+          msg: "successful",
+          user: details,
+        });
+      }
     }
   } catch (error) {
     res.status(500).send({
@@ -299,37 +290,109 @@ export async function getUser(req, res) {
   }
 }
 
-export async function updateUser(req, res, userID) {
+export async function updateUser(req, res) {
   try {
-    console.log(req.user);
     const { isAdmin } = req.user;
+    var { name, profile } = req.body;
+    var updates = {
+      name,
+      profile,
+    };
+
     if (isAdmin) {
-      var { id } = req.userID;
+      const { email, contact, password } = req.body;
+      var query = {
+        $or: [{ email }, { contact }],
+      };
+
+      if (password) {
+        var hashedpassword = bcrypt.hash(password, 12);
+        updates = { ...updates, password: hashedpassword };
+      }
+      if (email) {
+        updateData(req, res, { email }, updates);
+      }
+      if (contact) {
+        updateData(req, res, { contact }, updates);
+      }
+      if (id) {
+        updateData(req, res, { _id: id }, updates);
+      }
     } else {
       var { id } = req.user;
-    }
-    // const { id } = req.user;
-    if (id) {
-      const { name, profile } = req.body;
-
-      // update the data
-      userModel
-        .updateOne({ _id: id }, { name, profile })
-        .then(() => {
-          return res.status(201).send({ msg: "User updated successfully" });
-        })
-        .catch((err) => {
-          throw err;
-        });
-    } else {
-      return res.status(401).send({
-        msg: "user not found...!!!",
-        error: "user not found......!!!",
-      });
+      updateData(req, res, { _id: id }, updates);
     }
   } catch (error) {
+    console.log(error);
     res.status(500).send({
       msg: "",
+      error,
+    });
+  }
+}
+
+const updateData = (req, res, filters, updates) => {
+  // update the data
+  userModel
+    .updateOne(filters, updates)
+    .then(() => {
+      return res.status(201).send({ msg: "User updated successfully" });
+    })
+    .catch((err) => {
+      console.log(err);
+      return res.status(500).send({
+        msg: "User not found!!!",
+        error: err,
+      });
+    });
+};
+
+const deleteData = (req, res, filters) => {
+  const userExist = userModel.findOne(filters);
+  if (userExist) {
+    userModel
+      .deleteOne(filters)
+      .then(() => {
+        return res.status(200).send("User deleted successfully!!!");
+      })
+      .catch((err) => {
+        console.log(err);
+        return res.status(500).send({
+          msg: "Can't delete user",
+          error: err,
+        });
+      });
+  } else {
+    return res.status(200).send({
+      msg: "user Does not exist might be deleted already",
+    });
+  }
+};
+
+export async function deleteUser(req, res) {
+  try {
+    const { isAdmin } = req.user;
+    if (isAdmin) {
+      console.log("deleted by admin");
+      const { email, contact, id } = req.body;
+
+      if (email) {
+        deleteData(req, res, { email });
+      }
+      if (contact) {
+        deleteData(req, res, { contact });
+      }
+      if (id) {
+        deleteData(req, res, { _id: id });
+      }
+    } else {
+      console.log("deleted by user");
+      const { id } = req.user;
+      deleteData(req, res, { _id: id });
+    }
+  } catch (error) {
+    return res.status(500).send({
+      msg: "try catch error",
       error,
     });
   }
