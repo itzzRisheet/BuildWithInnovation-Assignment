@@ -8,7 +8,7 @@ export default async function connect() {
 
   // mongoose.set("strictQuery", true);
   await mongoose
-    .connect("mongodb://localhost:27017")
+    .connect(process.env.MONGOURI)
     .then((db) => {
       console.log("Database connected...");
       return db;
@@ -17,3 +17,4 @@ export default async function connect() {
       console.log(err);
     });
 }
+//dfs
