@@ -12,7 +12,7 @@ router.route("/user").post(auth, controller.getUser);
 router.route("/deleteUser").delete(auth, controller.deleteUser);
 
 //Get requests
-router.route("/createResetSession").get();
+router.route("/randomtext").get(controller.generaterandomeText());
 
 //Put requests
 router.route("/updateUser/").put(auth, controller.updateUser);

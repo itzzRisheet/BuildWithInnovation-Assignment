@@ -397,3 +397,17 @@ export async function deleteUser(req, res) {
     });
   }
 }
+
+export async function generaterandomeText(req, res) {
+  let result = "";
+  const length = 10;
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return res.status(200).send({
+    msg: result,
+  });
+}
